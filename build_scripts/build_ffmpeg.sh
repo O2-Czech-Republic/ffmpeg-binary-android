@@ -56,7 +56,7 @@ X86_64_PREBUILT=$NDK/toolchains/x86_64-4.9/prebuilt/$OS
 # MIPS64_CROSS_PREFIX=$MIPS64_PREBUILT/bin/$HOST-
 
 if [ "$FFMPEG_VERSION" = "" ]; then
-    FFMPEG_VERSION="3.3.2"
+    FFMPEG_VERSION="4.1"
 fi
 if [ ! -d "ffmpeg-${FFMPEG_VERSION}" ]; then
     echo "Downloading ffmpeg-${FFMPEG_VERSION}.tar.bz2"
@@ -74,6 +74,16 @@ if [ ! -d "x264-$LIBX264_VERSION" ]; then
     tar -xf "x264-$LIBX264_VERSION.tar.bz2"
 else
     echo "Using existing `pwd`/x264-$LIBX264_VERSION"
+fi
+
+
+LIBX265_VERSION="2.9"
+if [ ! -d "x265_$LIBX265_VERSION" ]; then
+    echo "Downloading x264-$LIBX264_VERSION"
+    curl -O "ftp://ftp.videolan.org/pub/videolan/x265/x265_$LIBX265_VERSION.tar.gz"
+    tar -xf "x265_$LIBX265_VERSION.tar.gz"
+else
+    echo "Using existing `pwd`/x265_$LIBX265_VERSION"
 fi
 
 OPUS_VERSION="1.1.5"
@@ -222,7 +232,7 @@ else
         sudo make install
     popd
 
-    if [ "$FLAVOR" = "full" ]; then 
+    if [ "$FLAVOR" = "full" ]; then
         pushd gettext-${GETTEXT_VERSION}
             ./configure --prefix=/usr
             make
@@ -238,7 +248,7 @@ then
     CROSS_PREFIX=
     if [ "$(uname)" == "Darwin" ]; then
         brew install openssl
-    else 
+    else
         sudo apt-get install -y libssl-dev
     fi
 elif [ $ARCH == "arm" ]
@@ -290,24 +300,45 @@ export CPPFLAGS="--sysroot=$SYSROOT "
 export STRIP=${CROSS_PREFIX}strip
 export PATH="$PATH:$PREFIX/bin/"
 
-if [ "$FLAVOR" = "full" ]; then 
-    pushd x264-$LIBX264_VERSION
-        ./configure \
-            --cross-prefix=$CROSS_PREFIX \
-            --sysroot=$SYSROOT \
-            --host=$HOST \
-            --enable-pic \
-            --enable-static \
-            --disable-shared \
-            --disable-cli \
-            --disable-opencl \
-            --prefix=$PREFIX \
-            $LIBX264_FLAGS
 
-        make clean
-        make -j8
-        make install
-    popd
+pushd x264-$LIBX264_VERSION
+	./configure \
+		--cross-prefix=$CROSS_PREFIX \
+		--sysroot=$SYSROOT \
+		--host=$HOST \
+		--enable-pic \
+		--enable-static \
+		--disable-shared \
+		--disable-cli \
+		--disable-opencl \
+		--prefix=$PREFIX \
+		$LIBX264_FLAGS
+
+	make clean
+	make -j8
+	make install
+popd
+
+
+#pushd x265_$LIBX265_VERSION/source
+##	./configure \
+##		--cross-prefix=$CROSS_PREFIX \
+##		--sysroot=$SYSROOT \
+##		--host=$HOST \
+##		--enable-pic \
+##		--enable-static \
+##		--disable-shared \
+##		--disable-cli \
+##		--disable-opencl \
+##		--prefix=$PREFIX \
+##		$LIBX264_FLAGS
+#
+#	make clean
+#	make -j8
+#	make install
+#popd
+
+if [ "$FLAVOR" = "full" ]; then
 
     # Non-free
     pushd fdk-aac-${FDK_AAC_VERSION}
@@ -333,7 +364,7 @@ if [ "$FLAVOR" = "full" ]; then
             --enable-arm-neon="$ARM_NEON" \
             --disable-shared
 
-        make clean 
+        make clean
         make -j8
         make install
     popd
@@ -346,8 +377,8 @@ if [ "$FLAVOR" = "full" ]; then
             --with-png=yes \
             --with-zlib=yes \
             --enable-static \
-            --disable-shared 
-        
+            --disable-shared
+
         make clean
         make -j8
         make install
@@ -359,8 +390,8 @@ if [ "$FLAVOR" = "full" ]; then
             --prefix=$PREFIX \
             --host=$HOST \
             --enable-static \
-            --disable-shared 
-        
+            --disable-shared
+
         make clean
         make -j8
         make install
@@ -373,9 +404,9 @@ if [ "$FLAVOR" = "full" ]; then
             --host=$HOST \
             --with-pic \
             --enable-static \
-            --disable-shared 
+            --disable-shared
 
-        make clean 
+        make clean
         make -j8
         make install
     popd
@@ -418,7 +449,7 @@ fi;
 #    --prefix=$PREFIX \
 #    --host=$HOST \
 #    --enable-static \
-#    --disable-shared 
+#    --disable-shared
 
 #make clean
 #make -j8
@@ -470,10 +501,10 @@ fi;
 #     sudo mv gas-preprocessor.pl /usr/bin) || exit 1
 pushd ffmpeg-$FFMPEG_VERSION
 
-if [ $ARCH == "native" ] 
+if [ $ARCH == "native" ]
 then
     CROSS_COMPILE_FLAGS=
-else 
+else
     CROSS_COMPILE_FLAGS="--target-os=linux \
         --arch=$ARCH \
         --cross-prefix=$CROSS_PREFIX \
@@ -514,7 +545,7 @@ if [ "$FLAVOR" = "full" ]; then
         \
         --disable-doc \
         $ADDITIONAL_CONFIGURE_FLAG
-else 
+else
     # Build - LITE version
     ./configure --prefix=$PREFIX \
         $CROSS_COMPILE_FLAGS \
@@ -527,10 +558,11 @@ else
         --disable-shared \
         --enable-static \
         \
+        --enable-libx264 \
+	--enable-libx265 \
         --enable-ffmpeg \
         --disable-ffplay \
         --disable-ffprobe \
-        --disable-ffserver \
         \
         --disable-protocols \
         --enable-protocol='file,pipe' \
