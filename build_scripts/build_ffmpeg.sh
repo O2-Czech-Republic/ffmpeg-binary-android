@@ -399,71 +399,71 @@ if [ "$FLAVOR" = "full" ]; then
 fi;
 
 
-pushd opus-${OPUS_VERSION}
-./configure \
-    --prefix=$PREFIX \
-    --host=$HOST \
-    --enable-static \
-    --disable-shared \
-    --disable-doc \
-    --disable-extra-programs
+#pushd opus-${OPUS_VERSION}
+#./configure \
+#    --prefix=$PREFIX \
+#    --host=$HOST \
+#    --enable-static \
+#    --disable-shared \
+#    --disable-doc \
+#    --disable-extra-programs
 
-make clean
-make -j8
-make install V=1
-popd
+#make clean
+#make -j8
+#make install V=1
+#popd
 
-pushd lame-${LAME_VERSION}
-./configure \
-    --prefix=$PREFIX \
-    --host=$HOST \
-    --enable-static \
-    --disable-shared 
+#pushd lame-${LAME_VERSION}
+#./configure \
+#    --prefix=$PREFIX \
+#    --host=$HOST \
+#    --enable-static \
+#    --disable-shared 
 
-make clean
-make -j8
-make install
-popd
+#make clean
+#make -j8
+#make install
+#popd
 
-pushd shine
-./bootstrap
-./configure \
-    --prefix=$PREFIX \
-    --host=$HOST \
-    --enable-static \
-    --disable-shared
+#pushd shine
+#./bootstrap
+#./configure \
+#    --prefix=$PREFIX \
+#    --host=$HOST \
+#    --enable-static \
+#    --disable-shared
 
-make clean
-make -j8
-make install
-popd
+#make clean
+#make -j8
+#make install
+#popd
 
-pushd libogg-${LIBOGG_VERSION}
-./configure \
-    --prefix=$PREFIX \
-    --host=$HOST \
-    --enable-static \
-    --disable-shared \
-    --with-sysroot=$SYSROOT
+#pushd libogg-${LIBOGG_VERSION}
+#./configure \
+#    --prefix=$PREFIX \
+#    --host=$HOST \
+#    --enable-static \
+#    --disable-shared \
+#    --with-sysroot=$SYSROOT
 
-make clean
-make -j8
-make install
-popd
+#make clean
+#make -j8
+#make install
+#popd
 
-pushd libvorbis-${LIBVORBIS_VERSION}
-./configure \
-    --prefix=$PREFIX \
-    --host=$HOST \
-    --enable-static \
-    --disable-shared \
-    --with-sysroot=$SYSROOT \
-    --with-ogg=$PREFIX
+#pushd libvorbis-${LIBVORBIS_VERSION}
+#./configure \
+#    --prefix=$PREFIX \
+#    --host=$HOST \
+#    --enable-static \
+#    --disable-shared \
+#    --with-sysroot=$SYSROOT \
+#    --with-ogg=$PREFIX
 
-make clean
-make -j8
-make install
-popd
+#make clean
+#make -j8
+#make install
+#popd
 
 # (wget --no-check-certificate https://raw.githubusercontent.com/FFmpeg/gas-preprocessor/master/gas-preprocessor.pl && \
 #     chmod +x gas-preprocessor.pl && \
@@ -537,18 +537,17 @@ else
         \
         --disable-demuxers \
         --disable-muxers \
-        --enable-demuxer='aac,avi,dnxhd,flac,flv,gif,h261,h263,h264,image2,matroska,webm,mov,mp3,mp4,mpeg,ogg,srt,wav,webvtt,gif,image2,image2pipe,mjpeg' \
-        --enable-muxer='3gp,dnxhd,flac,flv,gif,image2,matroska,webm,mov,mp3,mp4,mpeg,ogg,opus,srt,wav,webvtt,ipod,gif,image2,image2pipe,mjpeg' \
+        --enable-demuxer='aac,h264,h265' \
+        --enable-muxer='mp4' \
         \
         --disable-encoders \
         --disable-decoders \
-        --enable-encoder='aac,dnxhd,flac,flv,gif,libmp3lame,libopus,libshine,libvorbis,mpeg4,png,mjpeg,gif,srt,subrip,webvtt' \
-        --enable-decoder='aac,aac_at,aac_fixed,aac_latm,dnxhd,flac,flv,h261,h263,h263i,h263p,h264,vp8,vp9,libopus,libvorbis,mp3,mpeg4,wavpack,png,mjpeg,gif,pcm_s16le,pcm_s16be,rawvideo,srt,webvtt' \
+        --enable-decoder='aac,h264,h265' \
         \
-        --enable-libshine \
-        --enable-libmp3lame \
-        --enable-libopus \
-        --enable-libvorbis \
+        --disable-libshine \
+        --disable-libmp3lame \
+        --disable-libopus \
+        --disable-libvorbis \
         --enable-bsf=aac_adtstoasc \
         \
         --disable-doc \
@@ -634,4 +633,3 @@ else
     echo "Unknown target: $TARGET"
     exit 1
 fi
-
